@@ -19,7 +19,9 @@ sealed class Screen(val route: String) {
         fun createRoute(designType: String) = "add_photo/$designType"
     }
     object ChooseRoom : Screen("choose_room")
-    object SelectStyle : Screen("select_style")
+    object SelectStyle : Screen("select_style/{isGardenDesign}") {
+        fun createRoute(isGardenDesign: Boolean) = "select_style/$isGardenDesign"
+    }
     object DesignResult : Screen("design_result")
     object ListDesigns : Screen("list_designs")
 }
@@ -68,7 +70,11 @@ fun NavGraph(
                     navController.popBackStack()
                 },
                 onContinue = {
-                    navController.navigate(Screen.ChooseRoom.route)
+                    if (designType == "Garden Design") {
+                        navController.navigate(Screen.SelectStyle.createRoute(isGardenDesign = true))
+                    } else {
+                        navController.navigate(Screen.ChooseRoom.route)
+                    }
                 }
             )
         }
@@ -79,13 +85,20 @@ fun NavGraph(
                     navController.popBackStack()
                 },
                 onContinue = {
-                    navController.navigate(Screen.SelectStyle.route)
+                    navController.navigate(Screen.SelectStyle.createRoute(isGardenDesign = false))
                 }
             )
         }
 
-        composable(Screen.SelectStyle.route) {
+        composable(
+            route = Screen.SelectStyle.route,
+            arguments = listOf(
+                navArgument("isGardenDesign") { type = NavType.BoolType }
+            )
+        ) { backStackEntry ->
+            val isGardenDesign = backStackEntry.arguments?.getBoolean("isGardenDesign") ?: false
             SelectStyleScreen(
+                isGardenDesign = isGardenDesign,
                 onNavigateBack = {
                     navController.popBackStack()
                 },

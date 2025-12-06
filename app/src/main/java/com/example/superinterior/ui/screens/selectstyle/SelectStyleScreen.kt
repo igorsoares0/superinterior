@@ -20,6 +20,7 @@ import com.example.superinterior.ui.viewmodel.SelectStyleViewModel
 
 @Composable
 fun SelectStyleScreen(
+    isGardenDesign: Boolean = false,
     onNavigateBack: () -> Unit,
     onContinue: () -> Unit,
     viewModel: SelectStyleViewModel = viewModel()
@@ -27,11 +28,14 @@ fun SelectStyleScreen(
     val uiState by viewModel.uiState.collectAsState()
     var selectedBottomItem by remember { mutableStateOf(1) }
 
+    val currentStep = if (isGardenDesign) 2 else 3
+    val totalSteps = if (isGardenDesign) 2 else 3
+
     Scaffold(
         topBar = {
             StepProgressTopBar(
-                currentStep = uiState.currentStep,
-                totalSteps = uiState.totalSteps,
+                currentStep = currentStep,
+                totalSteps = totalSteps,
                 onCloseClick = onNavigateBack
             )
         },

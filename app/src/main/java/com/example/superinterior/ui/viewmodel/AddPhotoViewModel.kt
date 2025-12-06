@@ -11,7 +11,13 @@ data class AddPhotoUiState(
     val currentStep: Int = 1,
     val totalSteps: Int = 3,
     val designType: String = "Interior Redesign"
-)
+) {
+    val isGardenDesign: Boolean
+        get() = designType == "Garden Design"
+
+    val actualTotalSteps: Int
+        get() = if (isGardenDesign) 2 else 3
+}
 
 class AddPhotoViewModel : ViewModel() {
 
@@ -19,7 +25,10 @@ class AddPhotoViewModel : ViewModel() {
     val uiState: StateFlow<AddPhotoUiState> = _uiState.asStateFlow()
 
     fun setDesignType(type: String) {
-        _uiState.value = _uiState.value.copy(designType = type)
+        _uiState.value = _uiState.value.copy(
+            designType = type,
+            totalSteps = if (type == "Garden Design") 2 else 3
+        )
     }
 
     fun onPhotoSelected(uri: Uri) {
