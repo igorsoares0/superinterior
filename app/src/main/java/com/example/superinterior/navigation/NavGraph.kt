@@ -48,6 +48,9 @@ fun NavGraph(
             ListDesignsScreen(
                 onNavigateToHome = {
                     navController.popBackStack(Screen.Home.route, inclusive = false)
+                },
+                onNavigateToAddPhoto = { designType ->
+                    navController.navigate(Screen.AddPhoto.createRoute(designType))
                 }
             )
         }

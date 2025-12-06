@@ -22,6 +22,7 @@ import com.example.superinterior.ui.viewmodel.ListDesignsViewModel
 @Composable
 fun ListDesignsScreen(
     onNavigateToHome: () -> Unit = {},
+    onNavigateToAddPhoto: (String) -> Unit = {},
     viewModel: ListDesignsViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -33,8 +34,9 @@ fun ListDesignsScreen(
                 selectedItem = selectedBottomItem,
                 onItemSelected = { index ->
                     selectedBottomItem = index
-                    if (index == 0) {
-                        onNavigateToHome()
+                    when (index) {
+                        0 -> onNavigateToHome()
+                        1 -> onNavigateToAddPhoto("Interior Redesign")
                     }
                 }
             )

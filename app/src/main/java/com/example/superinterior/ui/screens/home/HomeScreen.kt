@@ -39,8 +39,9 @@ fun HomeScreen(
                 selectedItem = selectedBottomItem,
                 onItemSelected = { index ->
                     selectedBottomItem = index
-                    if (index == 2) {
-                        onNavigateToListDesigns()
+                    when (index) {
+                        1 -> onNavigateToAddPhoto("Interior Redesign")
+                        2 -> onNavigateToListDesigns()
                     }
                 }
             )
