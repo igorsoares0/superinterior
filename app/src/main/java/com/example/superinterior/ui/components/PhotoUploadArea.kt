@@ -31,25 +31,24 @@ fun PhotoUploadArea(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
-            .heightIn(min = 400.dp),
+            .height(520.dp),
         contentAlignment = Alignment.Center
     ) {
         // Dashed border box
         Canvas(
             modifier = Modifier
-                .fillMaxWidth()
-                .heightIn(min = 400.dp)
+                .fillMaxSize()
         ) {
             drawRoundRect(
-                color = Color.Gray,
+                color = Color(0xFFCCCCCC),
                 style = Stroke(
                     width = 2.dp.toPx(),
                     pathEffect = PathEffect.dashPathEffect(
-                        intervals = floatArrayOf(10f, 10f),
+                        intervals = floatArrayOf(12f, 12f),
                         phase = 0f
                     )
                 ),
-                cornerRadius = CornerRadius(12.dp.toPx())
+                cornerRadius = CornerRadius(8.dp.toPx())
             )
         }
 
@@ -57,38 +56,39 @@ fun PhotoUploadArea(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(32.dp),
+                .padding(48.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
             Text(
                 text = title,
-                fontSize = 20.sp,
+                fontSize = 24.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = Color.Black
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
             Text(
                 text = subtitle,
-                fontSize = 14.sp,
-                color = Color.Gray
+                fontSize = 15.sp,
+                color = Color(0xFF666666)
             )
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(32.dp))
 
             Button(
                 onClick = onUploadClick,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.Black
                 ),
-                shape = RoundedCornerShape(24.dp),
-                contentPadding = PaddingValues(horizontal = 32.dp, vertical = 12.dp)
+                shape = RoundedCornerShape(28.dp),
+                contentPadding = PaddingValues(horizontal = 36.dp, vertical = 14.dp)
             ) {
                 Text(
                     text = buttonText,
                     fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium,
                     color = Color.White
                 )
             }
