@@ -54,7 +54,7 @@ fun BottomNavBar(
                     modifier = Modifier
                         .size(56.dp)
                         .background(
-                            color = if (selectedItem == 1) Color.Black else Color.LightGray,
+                            color = Color.Black,
                             shape = CircleShape
                         ),
                     contentAlignment = Alignment.Center
