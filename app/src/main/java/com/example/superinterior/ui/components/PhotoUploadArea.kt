@@ -24,7 +24,8 @@ fun PhotoUploadArea(
     title: String,
     subtitle: String,
     onUploadClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    buttonText: String = "Upload a photo"
 ) {
     Box(
         modifier = modifier
@@ -86,7 +87,7 @@ fun PhotoUploadArea(
                 contentPadding = PaddingValues(horizontal = 32.dp, vertical = 12.dp)
             ) {
                 Text(
-                    text = "Upload a photo",
+                    text = buttonText,
                     fontSize = 16.sp,
                     color = Color.White
                 )

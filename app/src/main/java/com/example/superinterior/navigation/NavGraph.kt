@@ -7,6 +7,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.superinterior.ui.screens.addphoto.AddPhotoScreen
+import com.example.superinterior.ui.screens.addreferencephoto.AddReferencePhotoScreen
+import com.example.superinterior.ui.screens.addroomphoto.AddRoomPhotoScreen
 import com.example.superinterior.ui.screens.chooseroom.ChooseRoomScreen
 import com.example.superinterior.ui.screens.designresult.DesignResultScreen
 import com.example.superinterior.ui.screens.home.HomeScreen
@@ -18,6 +20,8 @@ sealed class Screen(val route: String) {
     object AddPhoto : Screen("add_photo/{designType}") {
         fun createRoute(designType: String) = "add_photo/$designType"
     }
+    object AddRoomPhoto : Screen("add_room_photo")
+    object AddReferencePhoto : Screen("add_reference_photo")
     object ChooseRoom : Screen("choose_room")
     object SelectStyle : Screen("select_style/{isGardenDesign}") {
         fun createRoute(isGardenDesign: Boolean) = "select_style/$isGardenDesign"
@@ -38,7 +42,11 @@ fun NavGraph(
         composable(Screen.Home.route) {
             HomeScreen(
                 onNavigateToAddPhoto = { designType ->
-                    navController.navigate(Screen.AddPhoto.createRoute(designType))
+                    if (designType == "Reference Style") {
+                        navController.navigate(Screen.AddRoomPhoto.route)
+                    } else {
+                        navController.navigate(Screen.AddPhoto.createRoute(designType))
+                    }
                 },
                 onNavigateToListDesigns = {
                     navController.navigate(Screen.ListDesigns.route)
@@ -52,7 +60,11 @@ fun NavGraph(
                     navController.popBackStack(Screen.Home.route, inclusive = false)
                 },
                 onNavigateToAddPhoto = { designType ->
-                    navController.navigate(Screen.AddPhoto.createRoute(designType))
+                    if (designType == "Reference Style") {
+                        navController.navigate(Screen.AddRoomPhoto.route)
+                    } else {
+                        navController.navigate(Screen.AddPhoto.createRoute(designType))
+                    }
                 }
             )
         }
@@ -112,6 +124,28 @@ fun NavGraph(
             DesignResultScreen(
                 onNavigateBack = {
                     navController.popBackStack(Screen.Home.route, inclusive = false)
+                }
+            )
+        }
+
+        composable(Screen.AddRoomPhoto.route) {
+            AddRoomPhotoScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+                onContinue = {
+                    navController.navigate(Screen.AddReferencePhoto.route)
+                }
+            )
+        }
+
+        composable(Screen.AddReferencePhoto.route) {
+            AddReferencePhotoScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+                onContinue = {
+                    navController.navigate(Screen.DesignResult.route)
                 }
             )
         }
