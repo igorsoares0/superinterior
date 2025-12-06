@@ -1,0 +1,102 @@
+package com.example.superinterior.ui.screens.addphoto
+
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.superinterior.ui.components.BottomNavBar
+import com.example.superinterior.ui.components.PhotoUploadArea
+import com.example.superinterior.ui.components.StepProgressTopBar
+import com.example.superinterior.ui.viewmodel.AddPhotoViewModel
+
+@Composable
+fun AddPhotoScreen(
+    designType: String = "Interior Redesign",
+    onNavigateBack: () -> Unit,
+    onContinue: () -> Unit = {},
+    viewModel: AddPhotoViewModel = viewModel()
+) {
+    val uiState by viewModel.uiState.collectAsState()
+    var selectedBottomItem by remember { mutableStateOf(1) }
+
+    Scaffold(
+        topBar = {
+            StepProgressTopBar(
+                currentStep = uiState.currentStep,
+                totalSteps = uiState.totalSteps,
+                onCloseClick = onNavigateBack
+            )
+        },
+        bottomBar = {
+            BottomNavBar(
+                selectedItem = selectedBottomItem,
+                onItemSelected = { selectedBottomItem = it }
+            )
+        },
+        containerColor = Color.White
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+        ) {
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Title
+            Text(
+                text = "Upload a photo",
+                fontSize = 28.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Black,
+                modifier = Modifier.padding(horizontal = 16.dp)
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Upload area
+            PhotoUploadArea(
+                title = "Start Redesign",
+                subtitle = "Redesign your room",
+                onUploadClick = { viewModel.onUploadClick() },
+                modifier = Modifier.weight(1f)
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Continue button
+            Button(
+                onClick = onContinue,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+                    .padding(bottom = 32.dp)
+                    .height(56.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.Black
+                ),
+                shape = RoundedCornerShape(28.dp)
+            ) {
+                Text(
+                    text = "Continue",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color.White
+                )
+            }
+        }
+    }
+}
