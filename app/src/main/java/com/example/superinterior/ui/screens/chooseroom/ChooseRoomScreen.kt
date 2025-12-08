@@ -21,7 +21,7 @@ import com.example.superinterior.ui.viewmodel.ChooseRoomViewModel
 @Composable
 fun ChooseRoomScreen(
     onNavigateBack: () -> Unit,
-    onContinue: () -> Unit,
+    onContinue: (String) -> Unit,
     viewModel: ChooseRoomViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -152,7 +152,12 @@ fun ChooseRoomScreen(
 
             // Continue button
             Button(
-                onClick = onContinue,
+                onClick = {
+                    uiState.selectedRoom?.let { room ->
+                        onContinue(room.lowercase().replace(" ", "_"))
+                    }
+                },
+                enabled = uiState.selectedRoom != null,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 32.dp)

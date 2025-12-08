@@ -1,5 +1,8 @@
 package com.example.superinterior.ui.screens.addroomphoto
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -9,6 +12,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -25,7 +29,15 @@ fun AddRoomPhotoScreen(
     viewModel: AddPhotoViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
     var selectedBottomItem by remember { mutableStateOf(1) }
+
+    // Photo picker launcher
+    val photoPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia()
+    ) { uri ->
+        uri?.let { viewModel.onPhotoSelected(context, it) }
+    }
 
     Scaffold(
         topBar = {
@@ -65,7 +77,12 @@ fun AddRoomPhotoScreen(
             PhotoUploadArea(
                 title = "Take a picture of",
                 subtitle = "your current room.",
-                onUploadClick = { viewModel.onUploadClick() },
+                selectedImageUri = uiState.selectedImageUri,
+                onUploadClick = {
+                    photoPickerLauncher.launch(
+                        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                    )
+                },
                 modifier = Modifier.weight(1f)
             )
 
@@ -74,6 +91,7 @@ fun AddRoomPhotoScreen(
             // Continue button
             Button(
                 onClick = onContinue,
+                enabled = uiState.selectedImageFile != null && !uiState.isProcessingImage,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)

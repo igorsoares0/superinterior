@@ -1,6 +1,5 @@
 package com.example.superinterior.ui.components
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -10,12 +9,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 
 @Composable
 fun SavedDesignCard(
-    imageRes: Int,
+    imageUrl: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -29,11 +30,14 @@ fun SavedDesignCard(
             containerColor = Color.White
         ),
         elevation = CardDefaults.cardElevation(
-            defaultElevation = 0.dp
+            defaultElevation = 2.dp
         )
     ) {
-        Image(
-            painter = painterResource(id = imageRes),
+        AsyncImage(
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(imageUrl)
+                .crossfade(true)
+                .build(),
             contentDescription = "Saved design",
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop

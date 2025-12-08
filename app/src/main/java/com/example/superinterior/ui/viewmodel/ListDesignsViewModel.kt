@@ -1,17 +1,22 @@
 package com.example.superinterior.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
-import com.example.superinterior.R
-import com.example.superinterior.data.model.SavedDesign
+import androidx.lifecycle.viewModelScope
+import com.example.superinterior.data.local.entities.DesignEntity
+import com.example.superinterior.data.repository.DesignRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
 data class ListDesignsUiState(
-    val savedDesigns: List<SavedDesign> = emptyList()
+    val savedDesigns: List<DesignEntity> = emptyList(),
+    val isLoading: Boolean = false
 )
 
-class ListDesignsViewModel : ViewModel() {
+class ListDesignsViewModel(
+    private val repository: DesignRepository
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ListDesignsUiState())
     val uiState: StateFlow<ListDesignsUiState> = _uiState.asStateFlow()
@@ -21,21 +26,25 @@ class ListDesignsViewModel : ViewModel() {
     }
 
     private fun loadSavedDesigns() {
-        // TODO: Carregar designs do banco de dados (Room)
-        // Por enquanto, usando dados mockados
-        _uiState.value = _uiState.value.copy(
-            savedDesigns = listOf(
-                SavedDesign(id = 1, imageRes = R.drawable.redesign),
-                SavedDesign(id = 2, imageRes = R.drawable.exterior),
-                SavedDesign(id = 3, imageRes = R.drawable.redesign),
-                SavedDesign(id = 4, imageRes = R.drawable.exterior),
-                SavedDesign(id = 5, imageRes = R.drawable.redesign),
-                SavedDesign(id = 6, imageRes = R.drawable.exterior)
-            )
-        )
+        viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(isLoading = true)
+
+            repository.getAllDesigns().collect { designs ->
+                _uiState.value = _uiState.value.copy(
+                    savedDesigns = designs,
+                    isLoading = false
+                )
+            }
+        }
+    }
+
+    fun deleteDesign(design: DesignEntity) {
+        viewModelScope.launch {
+            repository.deleteDesign(design)
+        }
     }
 
     fun onDesignClick(designId: Int) {
-        // TODO: Navegar para tela de detalhes do design
+        // TODO: Navigate to design details
     }
 }

@@ -105,7 +105,7 @@ fun ListDesignsScreen(
                 ) {
                     items(uiState.savedDesigns) { design ->
                         SavedDesignCard(
-                            imageRes = design.imageRes,
+                            imageUrl = design.generatedImageUrl,
                             onClick = { viewModel.onDesignClick(design.id) }
                         )
                     }
