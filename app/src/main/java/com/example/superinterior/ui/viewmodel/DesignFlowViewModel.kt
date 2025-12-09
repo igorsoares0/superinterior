@@ -14,6 +14,8 @@ data class DesignFlowState(
     val designType: String = "Interior Redesign",
     val imageFile: File? = null,
     val originalImagePath: String? = null,
+    val referenceImageFile: File? = null,
+    val referenceImagePath: String? = null,
     val roomType: String? = null,
     val selectedStyle: String? = null,
     val generationState: ApiState<GenerateResponse> = ApiState.Idle
@@ -41,6 +43,13 @@ class DesignFlowViewModel(
         )
     }
 
+    fun setReferenceImageFile(file: File, path: String) {
+        _flowState.value = _flowState.value.copy(
+            referenceImageFile = file,
+            referenceImagePath = path
+        )
+    }
+
     fun setRoomType(roomType: String) {
         _flowState.value = _flowState.value.copy(roomType = roomType)
     }
@@ -52,7 +61,6 @@ class DesignFlowViewModel(
     fun generateDesign() {
         val state = _flowState.value
         val imageFile = state.imageFile ?: return
-        val style = state.selectedStyle ?: return
 
         viewModelScope.launch {
             _flowState.value = _flowState.value.copy(
@@ -61,6 +69,7 @@ class DesignFlowViewModel(
 
             val result = when (state.designType) {
                 "Interior Redesign" -> {
+                    val style = state.selectedStyle ?: return@launch
                     val roomType = state.roomType ?: return@launch
                     repository.generateInteriorDesign(
                         imageFile = imageFile,
@@ -69,6 +78,7 @@ class DesignFlowViewModel(
                     )
                 }
                 "Garden Design" -> {
+                    val style = state.selectedStyle ?: return@launch
                     repository.generateGardenDesign(
                         imageFile = imageFile,
                         style = style,
@@ -77,9 +87,21 @@ class DesignFlowViewModel(
                     )
                 }
                 "Exterior Redesign" -> {
+                    val style = state.selectedStyle ?: return@launch
                     repository.generateExteriorDesign(
                         imageFile = imageFile,
                         style = style
+                    )
+                }
+                "Reference Style" -> {
+                    val referenceImageFile = state.referenceImageFile ?: return@launch
+                    val roomType = state.roomType ?: return@launch
+                    repository.generateReferenceStyle(
+                        baseImageFile = imageFile,
+                        referenceImageFile = referenceImageFile,
+                        roomType = roomType,
+                        strength = 0.6f,
+                        styleWeight = 0.7f
                     )
                 }
                 else -> {
@@ -94,9 +116,15 @@ class DesignFlowViewModel(
                 onSuccess = { response ->
                     if (response.success && response.outputUrl != null) {
                         // Save to database
+                        val styleToSave = if (state.designType == "Reference Style") {
+                            "reference_style"
+                        } else {
+                            state.selectedStyle ?: "unknown"
+                        }
+
                         repository.saveDesign(
                             designType = state.designType,
-                            style = style,
+                            style = styleToSave,
                             roomType = state.roomType,
                             originalImagePath = state.originalImagePath ?: "",
                             generatedImageUrl = response.outputUrl,

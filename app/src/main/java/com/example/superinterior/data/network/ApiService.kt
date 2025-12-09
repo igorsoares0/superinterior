@@ -129,4 +129,49 @@ class ApiService(private val client: OkHttpClient = ApiClient.okHttpClient) {
             Result.failure(e)
         }
     }
+
+    /**
+     * Reference style transfer - multipart/form-data (2 images)
+     */
+    suspend fun referenceStyle(
+        baseImageFile: File,
+        referenceImageFile: File,
+        roomType: String,
+        strength: Float = 0.6f,
+        styleWeight: Float = 0.7f,
+        model: String = "flux-dev"
+    ): Result<GenerateResponse> {
+        return try {
+            val requestBody = MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart(
+                    "base_image",
+                    baseImageFile.name,
+                    baseImageFile.asRequestBody("image/*".toMediaType())
+                )
+                .addFormDataPart(
+                    "reference_image",
+                    referenceImageFile.name,
+                    referenceImageFile.asRequestBody("image/*".toMediaType())
+                )
+                .addFormDataPart("room_type", roomType)
+                .addFormDataPart("strength", strength.toString())
+                .addFormDataPart("style_weight", styleWeight.toString())
+                .addFormDataPart("model", model)
+                .build()
+
+            val request = Request.Builder()
+                .url("$baseUrl/api/reference-style")
+                .post(requestBody)
+                .build()
+
+            val response = client.newCall(request).execute()
+            val responseBody = response.body?.string() ?: throw IOException("Empty response")
+
+            val result = json.decodeFromString<GenerateResponse>(responseBody)
+            Result.success(result)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }

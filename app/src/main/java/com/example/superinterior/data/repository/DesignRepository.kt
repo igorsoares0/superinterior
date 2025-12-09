@@ -50,6 +50,22 @@ class DesignRepository(
         )
     }
 
+    suspend fun generateReferenceStyle(
+        baseImageFile: File,
+        referenceImageFile: File,
+        roomType: String,
+        strength: Float = 0.6f,
+        styleWeight: Float = 0.7f
+    ): Result<GenerateResponse> = withContext(Dispatchers.IO) {
+        apiService.referenceStyle(
+            baseImageFile = baseImageFile,
+            referenceImageFile = referenceImageFile,
+            roomType = roomType,
+            strength = strength,
+            styleWeight = styleWeight
+        )
+    }
+
     suspend fun saveDesign(
         designType: String,
         style: String,

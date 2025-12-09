@@ -21,11 +21,12 @@ import com.example.superinterior.ui.components.BottomNavBar
 import com.example.superinterior.ui.components.PhotoUploadArea
 import com.example.superinterior.ui.components.StepProgressTopBar
 import com.example.superinterior.ui.viewmodel.AddPhotoViewModel
+import java.io.File
 
 @Composable
 fun AddReferencePhotoScreen(
     onNavigateBack: () -> Unit,
-    onContinue: () -> Unit = {},
+    onContinue: (File, String) -> Unit = { _, _ -> },
     viewModel: AddPhotoViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -91,7 +92,11 @@ fun AddReferencePhotoScreen(
 
             // Continue button
             Button(
-                onClick = onContinue,
+                onClick = {
+                    uiState.selectedImageFile?.let { file ->
+                        onContinue(file, uiState.selectedImageUri.toString())
+                    }
+                },
                 enabled = uiState.selectedImageFile != null && !uiState.isProcessingImage,
                 modifier = Modifier
                     .fillMaxWidth()

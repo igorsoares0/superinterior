@@ -138,13 +138,21 @@ fun NavGraph(
         }
 
         composable(Screen.ChooseRoom.route) {
+            val flowState by designFlowViewModel.flowState.collectAsState()
+
             ChooseRoomScreen(
                 onNavigateBack = {
                     navController.popBackStack()
                 },
                 onContinue = { roomType ->
                     designFlowViewModel.setRoomType(roomType)
-                    navController.navigate(Screen.SelectStyle.createRoute(isGardenDesign = false))
+
+                    // Check if it's Reference Style flow
+                    if (flowState.designType == "Reference Style") {
+                        navController.navigate(Screen.AddReferencePhoto.route)
+                    } else {
+                        navController.navigate(Screen.SelectStyle.createRoute(isGardenDesign = false))
+                    }
                 }
             )
         }
@@ -196,12 +204,18 @@ fun NavGraph(
         }
 
         composable(Screen.AddRoomPhoto.route) {
+            // Set design type when entering Reference Style flow
+            LaunchedEffect(Unit) {
+                designFlowViewModel.setDesignType("Reference Style")
+            }
+
             AddRoomPhotoScreen(
                 onNavigateBack = {
                     navController.popBackStack()
                 },
-                onContinue = {
-                    navController.navigate(Screen.AddReferencePhoto.route)
+                onContinue = { file, path ->
+                    designFlowViewModel.setImageFile(file, path)
+                    navController.navigate(Screen.ChooseRoom.route)
                 }
             )
         }
@@ -211,7 +225,9 @@ fun NavGraph(
                 onNavigateBack = {
                     navController.popBackStack()
                 },
-                onContinue = {
+                onContinue = { file, path ->
+                    designFlowViewModel.setReferenceImageFile(file, path)
+                    designFlowViewModel.generateDesign()
                     navController.navigate(Screen.DesignResult.route)
                 }
             )
