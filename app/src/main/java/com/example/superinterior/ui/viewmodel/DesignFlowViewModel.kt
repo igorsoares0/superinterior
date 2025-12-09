@@ -76,6 +76,12 @@ class DesignFlowViewModel(
                         strength = 0.5f
                     )
                 }
+                "Exterior Redesign" -> {
+                    repository.generateExteriorDesign(
+                        imageFile = imageFile,
+                        style = style
+                    )
+                }
                 else -> {
                     _flowState.value = _flowState.value.copy(
                         generationState = ApiState.Error("Unsupported design type: ${state.designType}")

@@ -121,10 +121,17 @@ fun NavGraph(
                 },
                 onContinue = { file, path ->
                     designFlowViewModel.setImageFile(file, path)
-                    if (designType == "Garden Design") {
-                        navController.navigate(Screen.SelectStyle.createRoute(isGardenDesign = true))
-                    } else {
-                        navController.navigate(Screen.ChooseRoom.route)
+                    when (designType) {
+                        "Garden Design" -> {
+                            navController.navigate(Screen.SelectStyle.createRoute(isGardenDesign = true))
+                        }
+                        "Exterior Redesign" -> {
+                            navController.navigate(Screen.SelectStyle.createRoute(isGardenDesign = false))
+                        }
+                        else -> {
+                            // Interior Redesign
+                            navController.navigate(Screen.ChooseRoom.route)
+                        }
                     }
                 }
             )

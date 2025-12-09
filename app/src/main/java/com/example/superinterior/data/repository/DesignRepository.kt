@@ -40,6 +40,16 @@ class DesignRepository(
         )
     }
 
+    suspend fun generateExteriorDesign(
+        imageFile: File,
+        style: String
+    ): Result<GenerateResponse> = withContext(Dispatchers.IO) {
+        apiService.designExterior(
+            imageFile = imageFile,
+            style = style
+        )
+    }
+
     suspend fun saveDesign(
         designType: String,
         style: String,

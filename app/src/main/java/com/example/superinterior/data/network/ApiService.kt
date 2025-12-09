@@ -94,4 +94,39 @@ class ApiService(private val client: OkHttpClient = ApiClient.okHttpClient) {
             Result.failure(e)
         }
     }
+
+    /**
+     * Exterior redesign - multipart/form-data
+     */
+    suspend fun designExterior(
+        imageFile: File,
+        style: String,
+        model: String = "flux-dev"
+    ): Result<GenerateResponse> {
+        return try {
+            val requestBody = MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart(
+                    "image",
+                    imageFile.name,
+                    imageFile.asRequestBody("image/*".toMediaType())
+                )
+                .addFormDataPart("style", style)
+                .addFormDataPart("model", model)
+                .build()
+
+            val request = Request.Builder()
+                .url("$baseUrl/api/design-exterior")
+                .post(requestBody)
+                .build()
+
+            val response = client.newCall(request).execute()
+            val responseBody = response.body?.string() ?: throw IOException("Empty response")
+
+            val result = json.decodeFromString<GenerateResponse>(responseBody)
+            Result.success(result)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }
